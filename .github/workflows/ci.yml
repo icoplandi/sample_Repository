@@ -1,0 +1,43 @@
+# ---------------------------------------------------
+# .github/workflows/ci.yml
+# ---------------------------------------------------
+
+# 1. 워크플로 이름 정의
+name: Basic CI Workflow
+
+# 2. 워크플로 실행 트리거 이벤트 설정
+# 'push' 이벤트와 'pull_request' 이벤트 발생 시 워크플로가 실행됩니다.
+on: 
+  push:
+    branches:
+      - main  # main 브랜치에 푸시될 때 실행
+  pull_request:
+    branches:
+      - main  # main 브랜치로 PR이 열릴 때 실행
+
+# 3. Job(작업) 정의
+# 워크플로 내에서 실행될 하나 이상의 작업(Job)을 정의합니다.
+jobs:
+  # 'build_and_test'라는 이름의 단일 Job 정의
+  build_and_test:
+    # 이 Job을 실행할 러너(Runner) 환경 지정 (GitHub에서 제공하는 최신 우분투 환경)
+    runs-on: ubuntu-latest 
+
+    # Job 내에서 순차적으로 실행될 단계(Step) 정의
+    steps:
+    
+      # Step 1: 저장소 코드 체크아웃
+      # actions/checkout@v4 Action을 사용하여 코드를 Runner에 복사합니다.
+    - name: Checkout Code
+      uses: actions/checkout@v4 
+
+      # Step 2: 간단한 명령어 실행
+      # 'run' 키워드는 Runner 환경에서 쉘 명령어를 실행합니다.
+    - name: Show Current Directory and Files
+      run: |
+        echo "The current directory is $(pwd)"
+        ls -a
+        
+      # Step 3: CI 성공 메시지 출력
+    - name: Final Success Message
+      run: echo "Basic CI Workflow Completed Successfully!"
