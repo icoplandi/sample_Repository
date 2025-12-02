@@ -1,0 +1,48 @@
+# .github/workflows/ci-extended.yml
+name: Extended CI Workflow (Matrix Testing)
+
+# 워크플로 트리거
+on: 
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+# Job 정의
+jobs:
+  # 1. 테스트 Job 정의: 여러 조합으로 실행하기 위해 matrix 사용
+  build-and-test:
+    name: Build & Test on Node ${{ matrix.node-version }} - ${{ matrix.os }}
+    
+    # 2. Strategy: Matrix 설정
+    # runs-on과 node-version의 모든 조합으로 Job을 여러 개 생성합니다.
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest] # 테스트할 운영체제 목록
+        node-version: [18.x, 20.x]         # 테스트할 Node.js 버전 목록
+
+    # 3. 환경 지정 (Matrix 변수 사용)
+    runs-on: ${{ matrix.os }} 
+
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v4
+
+    # 4. Node.js 환경 설정 Action 사용
+    - name: Set up Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ matrix.node-version }} # matrix에서 가져온 버전 사용
+        cache: 'npm' # npm 캐시를 활성화하여 설치 속도를 높입니다 (2단계 핵심 개념)
+
+    # 5. 종속성 설치
+    - name: Install Dependencies
+      # package.json에 정의된 스크립트 실행
+      run: npm install
+
+    # 6. 테스트 실행
+    - name: Run Tests
+      # package.json에 정의된 test 스크립트 실행
+      run: npm test
